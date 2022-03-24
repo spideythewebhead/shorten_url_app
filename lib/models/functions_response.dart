@@ -8,7 +8,7 @@ enum ResponseCode {
   unauthorized,
   @JsonValue('error')
   error,
-  @JsonValue('validationError')
+  @JsonValue('validation_error')
   validationError,
 }
 

@@ -53,7 +53,8 @@ class HomePageNotifier extends StateNotifier<HomePageState> {
     state = response.maybeWhen(
       data: (shortenUrl) {
         return state.copyWith(
-          pendingCreationUrls: state.pendingCreationUrls.removeItem(url),
+          pendingCreationUrls:
+              state.pendingCreationUrls.removeItem((item) => item == url),
           urlsState: state.urlsState.copyWith(
             urls: [
               shortenUrl,
@@ -64,7 +65,8 @@ class HomePageNotifier extends StateNotifier<HomePageState> {
       },
       orElse: () {
         return state.copyWith(
-          pendingCreationUrls: state.pendingCreationUrls.removeItem(url),
+          pendingCreationUrls:
+              state.pendingCreationUrls.removeItem((item) => item == url),
         );
       },
     );
@@ -105,8 +107,8 @@ class HomePageNotifier extends StateNotifier<HomePageState> {
 }
 
 extension ListX<T> on List<T> {
-  List<T> removeItem(T item) {
-    final index = indexOf(item);
+  List<T> removeItem(bool Function(T item) match) {
+    final index = indexWhere(match);
 
     if (index == -1) {
       return this;
@@ -114,7 +116,7 @@ extension ListX<T> on List<T> {
 
     return [
       ...sublist(0, index),
-      ...sublist(index),
+      ...sublist(1 + index),
     ];
   }
 }
