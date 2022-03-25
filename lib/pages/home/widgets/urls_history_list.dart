@@ -14,6 +14,7 @@ class UrlsHistoryList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(homePageStateProvider);
     final urlsState = state.urlsState;
+
     final notifier = ref.watch(homePageStateProvider.notifier);
 
     if (state.hasErrorLoading) {
@@ -30,6 +31,14 @@ class UrlsHistoryList extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      );
+    }
+
+    if (state.isLoading) {
+      return const SliverFillRemaining(
+        child: Center(
+          child: CircularProgressIndicator(),
         ),
       );
     }

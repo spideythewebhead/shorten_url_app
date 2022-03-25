@@ -4,6 +4,7 @@ import 'package:app/pages/register/register_page.dart';
 import 'package:app/pages/sign_in/sign_in_page.dart';
 import 'package:app/pages/splash_page.dart';
 import 'package:app/app_theme.dart';
+import 'package:app/pages/url_created_ad_page.dart';
 import 'package:app/state/app_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -118,6 +119,12 @@ class _ShortUrlAppState extends ConsumerState<ShortUrlApp> {
               }
 
               return null;
+            },
+          ),
+          YarRoute(
+            path: UrlCreatedAdPage.path,
+            builder: (BuildContext context, YarRouteState state) {
+              return const UrlCreatedAdPage();
             },
           ),
         ],

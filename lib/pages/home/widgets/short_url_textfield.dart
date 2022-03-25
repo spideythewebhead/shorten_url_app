@@ -34,7 +34,7 @@ class UrlCreationNotifier extends StateNotifier<UrlCreationState> {
 
   void submit() {
     if (state.canSubmit) {
-      _ref.watch(homePageStateProvider.notifier).createUrl(state.url);
+      _ref.read(homePageStateProvider.notifier).createUrl(state.url);
       state = const UrlCreationState();
     }
   }

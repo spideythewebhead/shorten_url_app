@@ -1,9 +1,12 @@
 import 'package:app/app_theme.dart';
+import 'package:app/dispose_container.dart';
+import 'package:app/pages/home/home_bottom_banner.dart';
 import 'package:app/pages/home/home_page_state.dart';
 import 'package:app/pages/home/widgets/pending_urls_list.dart';
 import 'package:app/pages/home/widgets/urls_history_list.dart';
 import 'package:app/pages/sign_in/sign_in_page.dart';
-import 'package:app/providers/repos_provider.dart';
+import 'package:app/pages/url_created_ad_page.dart';
+
 import 'package:app/state/app_state.dart';
 import 'package:app/widgets/app_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +16,8 @@ import 'package:yar/yar.dart';
 import 'widgets/short_url_textfield.dart';
 
 final homePageStateProvider =
-    StateNotifierProvider<HomePageNotifier, HomePageState>((ref) {
-  return HomePageNotifier(ref.read(reposProvider));
+    StateNotifierProvider.autoDispose<HomePageNotifier, HomePageState>((ref) {
+  return HomePageNotifier(ref);
 });
 
 class HomePage extends ConsumerStatefulWidget {
@@ -27,6 +30,16 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  var _disposableContainer = DisposableContainer();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _disposableContainer +=
+        ref.read(appStateProvider.notifier).eventStream.listen(_onAppEvent);
+  }
+
   void _onLogStateChanged(bool? wasLogged, bool isLogged) {
     if ((wasLogged ?? false) && !isLogged) {
       context.router.popUntilAndPush('', SignInPage.path);
@@ -38,6 +51,18 @@ class _HomePageState extends ConsumerState<HomePage> {
       appStateProvider.select((state) => state.isLogged),
       _onLogStateChanged,
     );
+  }
+
+  void _onAppEvent(AppEvent event) {
+    event.whenOrNull(urlCreated: () {
+      context.router.push(UrlCreatedAdPage.path);
+    });
+  }
+
+  @override
+  void dispose() {
+    _disposableContainer.dispose();
+    super.dispose();
   }
 
   @override
@@ -84,7 +109,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ],
               ),
             ),
-          )
+          ),
+          HomeBottomBanner(),
         ],
       ),
     );

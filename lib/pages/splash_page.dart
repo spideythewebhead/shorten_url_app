@@ -19,7 +19,8 @@ class SplashPage extends ConsumerWidget {
       body: Center(
         child: TweenAnimationBuilder<double>(
           onEnd: () {
-            ref.watch(appStateProvider.notifier).tryLogin();
+            ref.read(appStateProvider.notifier).tryLogin();
+
             final isLogged = ref //
                 .watch(appStateProvider.select((state) => state.isLogged));
 
@@ -54,7 +55,7 @@ class SplashPage extends ConsumerWidget {
               child: Padding(
                 padding: AppSpacing.paddingAll8,
                 child: Text(
-                  'Short URL',
+                  'Shorten URL',
                   style: context.theme.textTheme.bodyText1,
                 ),
               ),

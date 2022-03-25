@@ -1,5 +1,6 @@
 import 'package:app/models/shorten_url.dart';
 import 'package:app/providers/repos_provider.dart';
+import 'package:app/state/app_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -34,24 +35,29 @@ class UrlsState with _$UrlsState {
 }
 
 class HomePageNotifier extends StateNotifier<HomePageState> {
-  HomePageNotifier(this._repos) : super(HomePageState.empty) {
+  HomePageNotifier(this._ref) : super(HomePageState.empty) {
     _loadUrls();
   }
 
-  final Repos _repos;
+  final Ref _ref;
+
+  Repos get _repos => _ref.read(reposProvider);
 
   void retryFetchingUrls() {
     _loadUrls();
   }
 
   void createUrl(String url) async {
-    state = state
-        .copyWith(pendingCreationUrls: [url, ...state.pendingCreationUrls]);
+    state = state.copyWith(
+      pendingCreationUrls: [url, ...state.pendingCreationUrls],
+    );
 
     final response = await _repos.urls.createUrl(url);
 
     state = response.maybeWhen(
       data: (shortenUrl) {
+        _ref.read(appStateProvider.notifier).urlCreated();
+
         return state.copyWith(
           pendingCreationUrls:
               state.pendingCreationUrls.removeItem((item) => item == url),

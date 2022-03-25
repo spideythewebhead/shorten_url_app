@@ -20,6 +20,7 @@ dependencies:
   flutter_riverpod: 2.0.0-dev.1
   freezed_annotation: 1.1.0
   json_annotation: 4.4.0
+  google_mobile_ads: 1.1.0
 
 dev_dependencies:
   flutter_test:

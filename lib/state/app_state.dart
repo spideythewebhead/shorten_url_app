@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/models/user.dart';
 import 'package:app/providers/repos_provider.dart';
 import 'package:app/repos/auth/auth_repo.dart';
@@ -17,16 +19,22 @@ class AppState with _$AppState {
   bool get isLogged => user != User.visitor;
 }
 
+@freezed
+class AppEvent with _$AppEvent {
+  const factory AppEvent.urlCreated() = _UrlCreated;
+}
+
 class AppStateNotifier extends StateNotifier<AppState> {
   AppStateNotifier(
-    Ref ref,
-  ) : super(const AppState()) {
-    _ref = ref;
-    _authRepo = _ref.watch(reposProvider).auth;
-  }
+    this._ref,
+  ) : super(const AppState());
 
-  late final AuthRepo _authRepo;
   late final Ref _ref;
+
+  final _eventEmitter = StreamController<AppEvent>.broadcast();
+  Stream<AppEvent> get eventStream => _eventEmitter.stream;
+
+  AuthRepo get _authRepo => _ref.watch(reposProvider).auth;
 
   set user(User user) {
     state = state.copyWith(user: user);
@@ -40,6 +48,16 @@ class AppStateNotifier extends StateNotifier<AppState> {
     if (await _authRepo.logout()) {
       user = User.visitor;
     }
+  }
+
+  void urlCreated() {
+    _eventEmitter.add(const AppEvent.urlCreated());
+  }
+
+  @override
+  void dispose() {
+    _eventEmitter.close();
+    super.dispose();
   }
 }
 
