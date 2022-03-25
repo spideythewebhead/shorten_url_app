@@ -36,7 +36,7 @@ class UrlsRepo {
   Future<RepoResult<FetchMyUrlsData>> fetchMyUrls(String? lastCursorId) async {
     try {
       final response = await _functions
-          .httpsCallable('fetchMyUrls')({
+          .httpsCallable('fetchMyUrls')(<String, dynamic>{
             if (lastCursorId != null) 'lastCursorId': lastCursorId,
           })
           .then((result) => json.decode(result.data))

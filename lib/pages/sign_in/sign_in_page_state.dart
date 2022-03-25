@@ -65,7 +65,7 @@ class SignInPageStateNotifier extends StateNotifier<SignInPageState> {
 
       result.when<void>(
         logged: (user) {
-          _ref.watch(appStateProvider.notifier).user = user;
+          _ref.read(appStateProvider.notifier).user = user;
           _eventController.add(const SignInPageEvent.signed());
         },
         invalidEmail: () {
