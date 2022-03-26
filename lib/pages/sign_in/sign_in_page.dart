@@ -83,6 +83,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ControlledTextFormField(
+                      key: const Key('textfield-email'),
                       decoration: const AppTextFieldDecoration(
                         hintText: 'Email',
                         prefixIcon: Icon(Icons.alternate_email),
@@ -97,6 +98,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     ),
                     AppSpacing.verticalMargin8,
                     ControlledTextFormField(
+                      key: const Key('textfield-password'),
                       decoration: const AppTextFieldDecoration(
                         hintText: 'Password',
                         prefixIcon: Icon(Icons.password),
@@ -112,6 +114,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     ),
                     AppSpacing.verticalMargin8,
                     ElevatedButton(
+                      key: const Key('button-sign-in'),
                       child: const Text('Sign In'),
                       onPressed: stateNotifier.canSignIn ? signIn : null,
                     )
@@ -120,11 +123,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 AppSpacing.verticalMargin12,
                 const Text('Or', textAlign: TextAlign.center),
                 TextButton(
+                  key: const Key('button-sign-up'),
                   child: const Text('Sign Up'),
                   onPressed: onSignUp,
                 ),
                 const Divider(),
                 TextButton(
+                  key: const Key('button-continue-as-guest'),
                   child: const Text('Continue as anonymous'),
                   onPressed: () {},
                 ),

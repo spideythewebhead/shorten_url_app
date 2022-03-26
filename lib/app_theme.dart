@@ -35,6 +35,45 @@ abstract class AppTheme {
 
   static const radius = 4.0;
   static const borderRadius = BorderRadius.all(Radius.circular(radius));
+
+  static final dark = ThemeData(
+    brightness: Brightness.dark,
+    colorScheme: const ColorScheme.dark(
+      primary: AppTheme.primaryColor,
+      secondary: AppTheme.secondaryColor,
+    ),
+    scaffoldBackgroundColor: AppTheme.scaffoldColor,
+    dialogBackgroundColor: AppTheme.dialogColor,
+    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    textTheme: AppTheme.textTheme,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppTheme.primaryColor,
+    ),
+    cardTheme: const CardTheme(
+      color: AppTheme.dialogColor,
+      margin: EdgeInsets.zero,
+    ),
+    iconTheme: const IconThemeData(
+      size: 20.0,
+      color: Colors.white,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(88.0, 44.0),
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppTheme.borderRadius,
+        ),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        minimumSize: const Size(88.0, 44.0),
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppTheme.borderRadius,
+        ),
+      ),
+    ),
+  );
 }
 
 class AppTextFieldDecoration extends InputDecoration {

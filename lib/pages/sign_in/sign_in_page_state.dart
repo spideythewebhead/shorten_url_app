@@ -22,6 +22,12 @@ class SignInPageState with _$SignInPageState {
   static const initial = SignInPageState();
 }
 
+@freezed
+class SignInPageEvent with _$SignInPageEvent {
+  const factory SignInPageEvent.signed() = _$SignInPageEventSigned;
+  const factory SignInPageEvent.error() = _$SignInPageEventError;
+}
+
 class SignInPageStateNotifier extends StateNotifier<SignInPageState> {
   SignInPageStateNotifier({
     required Ref ref,
@@ -63,26 +69,28 @@ class SignInPageStateNotifier extends StateNotifier<SignInPageState> {
         password: state.password.trim(),
       );
 
-      result.when<void>(
+      state = result.when<SignInPageState>(
         logged: (user) {
           _ref.read(appStateProvider.notifier).user = user;
           _eventController.add(const SignInPageEvent.signed());
+
+          return state.copyWith(isLoading: false);
         },
         invalidEmail: () {
-          state = state.copyWith(
+          return state.copyWith(
             emailError: const AppInputValidationError.invalidEmail(),
             isLoading: false,
           );
         },
         wrongPassword: () {
-          state = state.copyWith(
+          return state.copyWith(
             passwordError: const AppInputValidationError.invalidCredentials(),
             isLoading: false,
           );
         },
         failed: () {
-          state = state.copyWith(isLoading: false);
           _eventController.add(const SignInPageEvent.error());
+          return state.copyWith(isLoading: false);
         },
       );
     }
@@ -93,10 +101,4 @@ class SignInPageStateNotifier extends StateNotifier<SignInPageState> {
     _eventController.close();
     super.dispose();
   }
-}
-
-@freezed
-class SignInPageEvent with _$SignInPageEvent {
-  const factory SignInPageEvent.signed() = _$SignInPageEventSigned;
-  const factory SignInPageEvent.error() = _$SignInPageEventError;
 }

@@ -42,7 +42,7 @@ void main() {
 
       notifier().emailChanged('p.tsakoulis@gmail.com');
 
-      expect(state().email, 'p.tsakoulis@gmail.com');
+      expect(state().email, equals('p.tsakoulis@gmail.com'));
       expect(state().emailError, isNull);
     });
   });
@@ -54,7 +54,7 @@ void main() {
 
       notifier().passwordChanged('123456');
 
-      expect(state().password, '123456');
+      expect(state().password, equals('123456'));
       expect(state().passwordError, isNull);
     });
 
@@ -152,6 +152,56 @@ void main() {
         state().passwordError,
         equals(const AppInputValidationError.invalidCredentials()),
       );
+
+      expect(state().isLoading, isFalse);
+    });
+
+    test('invalid email', () async {
+      when(mockAuthRepo.login(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+      )).thenAnswer((_) async => const AuthLoginResult.invalidEmail());
+
+      notifier()
+        ..emailChanged('p.tsakoulis@gmail.com')
+        ..passwordChanged('123123');
+
+      notifier().signIn();
+
+      expect(state().isLoading, isTrue);
+
+      await nextTick();
+
+      expect(
+        state().emailError,
+        equals(const AppInputValidationError.invalidEmail()),
+      );
+
+      expect(state().isLoading, isFalse);
+    });
+
+    test('fail', () async {
+      when(mockAuthRepo.login(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+      )).thenAnswer((_) async => const AuthLoginResult.failed());
+
+      notifier()
+        ..emailChanged('p.tsakoulis@gmail.com')
+        ..passwordChanged('123123');
+
+      expect(
+        notifier().eventStream,
+        emitsInOrder([
+          const SignInPageEvent.error(),
+        ]),
+      );
+
+      notifier().signIn();
+
+      expect(state().isLoading, isTrue);
+
+      await nextTick();
 
       expect(state().isLoading, isFalse);
     });

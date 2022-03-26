@@ -112,6 +112,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
                 AppSpacing.verticalMargin8,
                 ElevatedButton(
+                  key: const Key('button-sign-up'),
                   child: const Text('Sign Up'),
                   onPressed: state.canSignUp ? notifier.signUp : null,
                 ),
