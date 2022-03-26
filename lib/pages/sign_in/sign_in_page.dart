@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yar/yar.dart';
 
-final pageStateProvider =
+final signInPageStateProvider =
     StateNotifierProvider.autoDispose<SignInPageStateNotifier, SignInPageState>(
   (ref) {
     return SignInPageStateNotifier(ref: ref);
@@ -34,14 +34,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     super.initState();
 
     _disposableContainer += ref
-        .read(pageStateProvider.notifier)
+        .read(signInPageStateProvider.notifier)
         .eventStream
         .listen(_onEventReceived);
   }
 
   void signIn() {
     FocusScope.of(context).unfocus();
-    ref.watch(pageStateProvider.notifier).signIn();
+    ref.watch(signInPageStateProvider.notifier).signIn();
   }
 
   void onSignUp() {
@@ -65,8 +65,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(pageStateProvider);
-    final stateNotifier = ref.watch(pageStateProvider.notifier);
+    final state = ref.watch(signInPageStateProvider);
+    final stateNotifier = ref.watch(signInPageStateProvider.notifier);
 
     return Scaffold(
       body: SafeArea(

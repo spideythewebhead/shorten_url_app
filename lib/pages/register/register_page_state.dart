@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/app_input_validators.dart';
+import 'package:app/providers/repos_provider.dart';
 import 'package:app/repos/auth/auth_repo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -19,20 +20,15 @@ class RegisterPageState with _$RegisterPageState {
     @Default(false) bool isLoading,
   }) = _RegisterPageState;
 
-  bool get canSignUp {
-    return emailError == null && passwordError == null;
-  }
-
   static const initial = RegisterPageState();
 }
 
 class RegisterPageStateNotifier extends StateNotifier<RegisterPageState> {
-  RegisterPageStateNotifier({
-    required AuthRepo authRepo,
-  })  : _authRepo = authRepo,
-        super(RegisterPageState.initial);
+  RegisterPageStateNotifier(this._ref) : super(RegisterPageState.initial);
 
-  final AuthRepo _authRepo;
+  final Ref _ref;
+
+  AuthRepo get _authRepo => _ref.read(reposProvider).auth;
 
   final _eventController = StreamController<RegisterPageEvent>();
   Stream<RegisterPageEvent> get eventStream => _eventController.stream;
@@ -51,8 +47,15 @@ class RegisterPageStateNotifier extends StateNotifier<RegisterPageState> {
     );
   }
 
+  bool get canSignUp {
+    return state.email.trim().isNotEmpty &&
+        state.password.trim().isNotEmpty &&
+        state.emailError == null &&
+        state.passwordError == null;
+  }
+
   void signUp() async {
-    if (state.canSignUp && !state.isLoading) {
+    if (canSignUp && !state.isLoading) {
       state = state.copyWith(isLoading: true);
 
       final email = state.email.trim();
@@ -63,35 +66,34 @@ class RegisterPageStateNotifier extends StateNotifier<RegisterPageState> {
         password: password,
       );
 
-      result.when<void>(
+      state = result.when<RegisterPageState>(
         created: () {
           _eventController.add(const RegisterPageEvent.registered());
+          return state.copyWith(isLoading: false);
         },
         emailInUse: () {
-          state = state.copyWith(
+          return state.copyWith(
             isLoading: false,
             emailError: const AppInputValidationError.emailInUse(),
           );
         },
         invalidEmail: () {
-          state = state.copyWith(
+          return state.copyWith(
             isLoading: false,
             emailError: const AppInputValidationError.invalidEmail(),
           );
         },
         weakPassword: () {
-          state = state.copyWith(
+          return state.copyWith(
             isLoading: false,
             passwordError: const AppInputValidationError.weakPassword(),
           );
         },
         unknown: () {
-          state = state.copyWith(isLoading: false);
           _eventController.add(const RegisterPageEvent.error());
+          return state.copyWith(isLoading: false);
         },
       );
-
-      state = state.copyWith(isLoading: false);
     }
   }
 

@@ -23,7 +23,8 @@ class UrlCreationNotifier extends StateNotifier<UrlCreationState> {
 
   final Ref _ref;
 
-  final _urlRegExp = RegExp(r'^(http(s)?://)?[\w@-]+(\.\w{2,})+$');
+  final _urlRegExp =
+      RegExp(r'^(http(s)?://)[\w@-_]+(\.\w{2,})+[/ \w\d=@-_?&%]*$');
 
   void updateUrl(String url) {
     state = state.copyWith(

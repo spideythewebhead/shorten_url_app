@@ -2,7 +2,6 @@ import 'package:app/app_theme.dart';
 import 'package:app/dispose_container.dart';
 import 'package:app/pages/home/home_page.dart';
 import 'package:app/pages/register/register_page_state.dart';
-import 'package:app/providers/repos_provider.dart';
 import 'package:app/state/app_state.dart';
 import 'package:app/widgets/controlled_textfield.dart';
 import 'package:app/widgets/loading_overlay.dart';
@@ -10,14 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yar/yar.dart';
 
-final _pageStateProvider = StateNotifierProvider.autoDispose<
+final registerPageStateProvider = StateNotifierProvider.autoDispose<
     RegisterPageStateNotifier, RegisterPageState>(
   (ref) {
-    final repos = ref.watch(reposProvider);
-
-    return RegisterPageStateNotifier(
-      authRepo: repos.auth,
-    );
+    return RegisterPageStateNotifier(ref);
   },
 );
 
@@ -40,7 +35,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     super.initState();
 
     _disposableContainer += ref
-        .read(_pageStateProvider.notifier)
+        .read(registerPageStateProvider.notifier)
         .eventStream
         .listen(_onEventReceived);
   }
@@ -65,8 +60,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(_pageStateProvider);
-    final notifier = ref.watch(_pageStateProvider.notifier);
+    final state = ref.watch(registerPageStateProvider);
+    final stateNotifier = ref.watch(registerPageStateProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -91,7 +86,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   value: state.email,
-                  onChanged: notifier.emailChanged,
+                  onChanged: stateNotifier.emailChanged,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (_) => state.emailError?.translatedError(),
                 ),
@@ -106,7 +101,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   obscureText: true,
                   textInputAction: TextInputAction.done,
                   value: state.password,
-                  onChanged: notifier.passwordChanged,
+                  onChanged: stateNotifier.passwordChanged,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (_) => state.passwordError?.translatedError(),
                 ),
@@ -114,7 +109,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ElevatedButton(
                   key: const Key('button-sign-up'),
                   child: const Text('Sign Up'),
-                  onPressed: state.canSignUp ? notifier.signUp : null,
+                  onPressed:
+                      stateNotifier.canSignUp ? stateNotifier.signUp : null,
                 ),
               ],
             ),

@@ -57,7 +57,10 @@ class SignInPageStateNotifier extends StateNotifier<SignInPageState> {
   }
 
   bool get canSignIn {
-    return state.emailError == null && state.passwordError == null;
+    return state.email.trim().isNotEmpty &&
+        state.password.trim().isNotEmpty &&
+        state.emailError == null &&
+        state.passwordError == null;
   }
 
   void signIn() async {

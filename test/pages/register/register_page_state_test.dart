@@ -1,10 +1,8 @@
 import 'package:app/app_input_validators.dart';
-import 'package:app/models/app_models.dart';
-import 'package:app/pages/sign_in/sign_in_page.dart';
-import 'package:app/pages/sign_in/sign_in_page_state.dart';
+import 'package:app/pages/register/register_page.dart';
+import 'package:app/pages/register/register_page_state.dart';
 import 'package:app/providers/repos_provider.dart';
-import 'package:app/repos/auth/models/auth_login_result.dart';
-import 'package:app/state/app_state.dart';
+import 'package:app/repos/auth/models/create_user_result.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -13,28 +11,30 @@ import '../../all.mocks.dart';
 import '../../helper.dart';
 
 void main() {
-  final mockAuthRepo = MockAuthRepo();
+  late MockAuthRepo mockAuthRepo;
   late ProviderContainer container;
 
   setUp(() {
-    container = ProviderContainer(
-      overrides: [
-        reposProvider.overrideWithValue(
-          Repos(auth: mockAuthRepo, urls: MockUrlsRepo()),
-        )
-      ],
-    );
+    mockAuthRepo = MockAuthRepo();
+
+    container = ProviderContainer(overrides: [
+      reposProvider.overrideWithValue(
+        Repos(
+          auth: mockAuthRepo,
+          urls: MockUrlsRepo(),
+        ),
+      )
+    ]);
   });
 
   tearDown(() {
     container.dispose();
-    resetMockitoState();
   });
 
-  SignInPageState state() =>
-      container.read<SignInPageState>(signInPageStateProvider);
-  SignInPageStateNotifier notifier() =>
-      container.read<SignInPageStateNotifier>(signInPageStateProvider.notifier);
+  RegisterPageState state() =>
+      container.read<RegisterPageState>(registerPageStateProvider);
+  RegisterPageStateNotifier notifier() => container
+      .read<RegisterPageStateNotifier>(registerPageStateProvider.notifier);
 
   group('emailChanged', () {
     test('without error', () {
@@ -68,18 +68,18 @@ void main() {
       expect(state().password, '1234');
       expect(
         state().passwordError,
-        AppInputValidators.validatePassword('1234'),
+        equals(AppInputValidators.validatePassword('1234')),
       );
     });
   });
 
-  group('canSignIn', () {
+  group('canSignUp', () {
     test('email & password no errors', () {
       notifier()
         ..emailChanged('p.tsakoulis@gmail.com')
         ..passwordChanged('123456');
 
-      expect(notifier().canSignIn, isTrue);
+      expect(notifier().canSignUp, isTrue);
     });
 
     test('email has error', () {
@@ -87,7 +87,7 @@ void main() {
         ..emailChanged('')
         ..passwordChanged('123456');
 
-      expect(notifier().canSignIn, isFalse);
+      expect(notifier().canSignUp, isFalse);
     });
 
     test('password has error', () {
@@ -95,7 +95,7 @@ void main() {
         ..emailChanged('p.tsakoulis@gmail.com')
         ..passwordChanged('abc');
 
-      expect(notifier().canSignIn, isFalse);
+      expect(notifier().canSignUp, isFalse);
     });
 
     test('both email & password have errors', () {
@@ -103,18 +103,16 @@ void main() {
         ..emailChanged('')
         ..passwordChanged('abc');
 
-      expect(notifier().canSignIn, isFalse);
+      expect(notifier().canSignUp, isFalse);
     });
   });
 
-  group('signIn', () {
-    test('successfully signs in', () async {
-      const user = User(uid: '123456', email: 'p.tsakoulis@gmail.com');
-
-      when(mockAuthRepo.login(
+  group('signUp', () {
+    test('successfully', () async {
+      when(mockAuthRepo.createUser(
         email: anyNamed('email'),
         password: anyNamed('password'),
-      )).thenAnswer((_) async => const AuthLoginResult.logged(user));
+      )).thenAnswer((_) async => const AuthCreateUserResult.created());
 
       notifier()
         ..emailChanged('p.tsakoulis@gmail.com')
@@ -123,54 +121,54 @@ void main() {
       expect(
         notifier().eventStream,
         emitsInOrder([
-          const SignInPageEvent.signed(),
+          const RegisterPageEvent.registered(),
         ]),
       );
 
-      notifier().signIn();
+      notifier().signUp();
       await nextTick();
 
-      expect(container.read(appStateProvider).user, equals(user));
-    });
-
-    test('wrong credentials', () async {
-      when(mockAuthRepo.login(
+      verify(mockAuthRepo.createUser(
         email: anyNamed('email'),
         password: anyNamed('password'),
-      )).thenAnswer((_) async => const AuthLoginResult.wrongPassword());
+      )).called(1);
+    });
+
+    test('email in use', () async {
+      when(mockAuthRepo.createUser(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+      )).thenAnswer((_) async => const AuthCreateUserResult.emailInUse());
 
       notifier()
         ..emailChanged('p.tsakoulis@gmail.com')
         ..passwordChanged('123123');
 
-      notifier().signIn();
-
-      expect(state().isLoading, isTrue);
-
+      notifier().signUp();
       await nextTick();
 
       expect(
-        state().passwordError,
-        equals(const AppInputValidationError.invalidCredentials()),
+        state().emailError,
+        equals(const AppInputValidationError.emailInUse()),
       );
 
-      expect(state().isLoading, isFalse);
+      verify(mockAuthRepo.createUser(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+      )).called(1);
     });
 
     test('invalid email', () async {
-      when(mockAuthRepo.login(
+      when(mockAuthRepo.createUser(
         email: anyNamed('email'),
         password: anyNamed('password'),
-      )).thenAnswer((_) async => const AuthLoginResult.invalidEmail());
+      )).thenAnswer((_) async => const AuthCreateUserResult.invalidEmail());
 
       notifier()
         ..emailChanged('p.tsakoulis@gmail.com')
         ..passwordChanged('123123');
 
-      notifier().signIn();
-
-      expect(state().isLoading, isTrue);
-
+      notifier().signUp();
       await nextTick();
 
       expect(
@@ -178,33 +176,60 @@ void main() {
         equals(const AppInputValidationError.invalidEmail()),
       );
 
-      expect(state().isLoading, isFalse);
-    });
-
-    test('fail', () async {
-      when(mockAuthRepo.login(
+      verify(mockAuthRepo.createUser(
         email: anyNamed('email'),
         password: anyNamed('password'),
-      )).thenAnswer((_) async => const AuthLoginResult.failed());
+      )).called(1);
+    });
+
+    test('weak password', () async {
+      when(mockAuthRepo.createUser(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+      )).thenAnswer((_) async => const AuthCreateUserResult.weakPassword());
 
       notifier()
         ..emailChanged('p.tsakoulis@gmail.com')
-        ..passwordChanged('123123');
+        ..passwordChanged('123456');
+
+      notifier().signUp();
+      await nextTick();
+
+      expect(
+        state().passwordError,
+        equals(const AppInputValidationError.weakPassword()),
+      );
+
+      verify(mockAuthRepo.createUser(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+      )).called(1);
+    });
+
+    test('unknown', () async {
+      when(mockAuthRepo.createUser(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+      )).thenAnswer((_) async => const AuthCreateUserResult.unknown());
+
+      notifier()
+        ..emailChanged('p.tsakoulis@gmail.com')
+        ..passwordChanged('123456');
 
       expect(
         notifier().eventStream,
         emitsInOrder([
-          const SignInPageEvent.error(),
+          const RegisterPageEvent.error(),
         ]),
       );
 
-      notifier().signIn();
-
-      expect(state().isLoading, isTrue);
-
+      notifier().signUp();
       await nextTick();
 
-      expect(state().isLoading, isFalse);
+      verify(mockAuthRepo.createUser(
+        email: anyNamed('email'),
+        password: anyNamed('password'),
+      )).called(1);
     });
   });
 }
