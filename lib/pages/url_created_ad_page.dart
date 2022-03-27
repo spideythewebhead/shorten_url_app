@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:yar/yar.dart';
 
 class UrlCreatedAdPage extends ConsumerStatefulWidget {
   static const path = '/url_created_ad';
@@ -37,10 +38,10 @@ class _UrlCreatedAdPageState extends ConsumerState<UrlCreatedAdPage> {
   FullScreenContentCallback<InterstitialAd> _createFullScreenContentCallback() {
     return FullScreenContentCallback<InterstitialAd>(
       onAdDismissedFullScreenContent: (ad) {
-        Navigator.pop(context);
+        context.router.pop();
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        Navigator.pop(context);
+        context.router.pop();
       },
     );
   }
@@ -57,7 +58,7 @@ class _UrlCreatedAdPageState extends ConsumerState<UrlCreatedAdPage> {
         });
       },
       onAdFailedToLoad: (ad) {
-        Navigator.pop(context);
+        context.router.pop();
       },
     );
   }
@@ -72,7 +73,7 @@ class _UrlCreatedAdPageState extends ConsumerState<UrlCreatedAdPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: WillPopScope(
-        onWillPop: () => Future.value(false),
+        onWillPop: () => SynchronousFuture(false),
         child: _adLoaded ? emptyWidget : const _LoadingStateView(),
       ),
     );

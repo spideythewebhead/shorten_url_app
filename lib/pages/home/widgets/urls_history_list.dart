@@ -92,7 +92,7 @@ class UrlsHistoryTitle extends StatelessWidget {
   }
 }
 
-class _ShortUrlView extends StatelessWidget {
+class _ShortUrlView extends ConsumerWidget {
   const _ShortUrlView({
     Key? key,
     required this.shortUrl,
@@ -101,32 +101,37 @@ class _ShortUrlView extends StatelessWidget {
   final ShortenUrl shortUrl;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
-      child: Padding(
-        padding: AppSpacing.paddingAll8,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.short_text),
-                AppSpacing.horizontalMargin4,
-                Text(shortUrl.value),
-              ],
-            ),
-            const Divider(),
-            Flexible(
-              child: Row(
+      child: InkWell(
+        onTap: () {
+          ref.read(homePageStateProvider.notifier).shareUrl(shortUrl.value);
+        },
+        child: Padding(
+          padding: AppSpacing.paddingAll8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
                 children: [
-                  const Icon(Icons.link),
+                  const Icon(Icons.short_text),
                   AppSpacing.horizontalMargin4,
-                  Flexible(child: Text(shortUrl.longUrl)),
+                  Text(shortUrl.value),
                 ],
               ),
-            ),
-          ],
+              const Divider(),
+              Flexible(
+                child: Row(
+                  children: [
+                    const Icon(Icons.link),
+                    AppSpacing.horizontalMargin4,
+                    Flexible(child: Text(shortUrl.longUrl)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

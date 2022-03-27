@@ -57,6 +57,7 @@ class CreateShortUrlTextField extends ConsumerWidget {
     final stateNotifier = ref.watch(urlCreationStateProvider.notifier);
 
     return ControlledTextFormField(
+      key: const Key('textfield-create-url'),
       decoration: AppTextFieldDecoration(
         hintText: 'https://my-long-url/here',
         prefixIcon: const Icon(Icons.link),

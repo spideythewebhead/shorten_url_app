@@ -20,8 +20,8 @@ class AuthRepo {
   final _disposableContainer = DisposableContainer();
   final FirebaseAuth _auth;
 
-  User get user => _user;
   User _user = User.visitor;
+  User get user => _user;
 
   /// Creates a user with the given [email] and [password]
   ///

@@ -127,19 +127,19 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                   child: const Text('Sign Up'),
                   onPressed: onSignUp,
                 ),
-                const Divider(),
-                TextButton(
-                  key: const Key('button-continue-as-guest'),
-                  child: const Text('Continue as anonymous'),
-                  onPressed: () {},
-                ),
-                AppSpacing.verticalMargin8,
-                Text(
-                  'Your history will be lost if you re-install the app.\n'
-                  'Also your links will be erased after the end of day.',
-                  style: context.theme.textTheme.caption,
-                  textAlign: TextAlign.center,
-                ),
+                // const Divider(),
+                // TextButton(
+                //   key: const Key('button-continue-as-guest'),
+                //   child: const Text('Continue as anonymous'),
+                //   onPressed: () {},
+                // ),
+                // AppSpacing.verticalMargin8,
+                // Text(
+                //   'Your history will be lost if you re-install the app.\n'
+                //   'Also your links will be erased after the end of day.',
+                //   style: context.theme.textTheme.caption,
+                //   textAlign: TextAlign.center,
+                // ),
               ],
             ),
           ),

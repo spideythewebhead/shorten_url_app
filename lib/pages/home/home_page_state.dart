@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:app/models/shorten_url.dart';
 import 'package:app/providers/repos_provider.dart';
 import 'package:app/state/app_state.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:share_plus/share_plus.dart';
 
 part 'home_page_state.freezed.dart';
 
@@ -109,6 +114,14 @@ class HomePageNotifier extends StateNotifier<HomePageState> {
         );
       },
     );
+  }
+
+  void shareUrl(String shortUrl) async {
+    try {
+      await Share.share('https://mini-url.web.app/$shortUrl');
+    } on PlatformException catch (e) {
+      log('$e');
+    }
   }
 }
 
