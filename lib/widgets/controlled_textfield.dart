@@ -109,7 +109,8 @@ class ControlledTextFormField extends StatefulWidget {
   final bool enableIMEPersonalizedLearning;
 
   @override
-  _ControlledTextFormFieldState createState() => _ControlledTextFormFieldState();
+  _ControlledTextFormFieldState createState() =>
+      _ControlledTextFormFieldState();
 }
 
 class _ControlledTextFormFieldState extends State<ControlledTextFormField> {
@@ -126,7 +127,8 @@ class _ControlledTextFormFieldState extends State<ControlledTextFormField> {
   void didUpdateWidget(covariant ControlledTextFormField oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.value != widget.value && _textController.text != widget.value) {
+    if (oldWidget.value != widget.value &&
+        _textController.text != widget.value) {
       scheduleMicrotask(() {
         _textController.value = TextEditingValue(
           text: widget.value,
