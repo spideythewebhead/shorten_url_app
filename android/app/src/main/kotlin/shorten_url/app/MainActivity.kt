@@ -1,4 +1,4 @@
-package short_url.app
+package shorten_url.app
 
 import io.flutter.embedding.android.FlutterActivity
 

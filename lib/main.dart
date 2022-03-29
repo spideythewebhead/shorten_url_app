@@ -15,7 +15,7 @@ import 'package:yar/yar.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: FirebaseConfig.android);
+  await Firebase.initializeApp();
 
   if (kEmulatorsIp.isNotEmpty) {
     await FirebaseAuth.instance.useAuthEmulator(kEmulatorsIp, 9099);

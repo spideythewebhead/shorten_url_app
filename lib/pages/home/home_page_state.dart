@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:app/models/shorten_url.dart';
 import 'package:app/providers/repos_provider.dart';
 import 'package:app/state/app_state.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -88,7 +87,7 @@ class HomePageNotifier extends StateNotifier<HomePageState> {
       return;
     }
 
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, hasErrorLoading: false);
 
     final response =
         await _repos.urls.fetchMyUrls(state.urlsState.lastCursorId);
@@ -118,7 +117,7 @@ class HomePageNotifier extends StateNotifier<HomePageState> {
 
   void shareUrl(String shortUrl) async {
     try {
-      await Share.share('https://mini-url.web.app/$shortUrl');
+      await Share.share('https://shrurl.web.app/$shortUrl');
     } on PlatformException catch (e) {
       log('$e');
     }

@@ -4,6 +4,7 @@ import 'package:app/pages/home/home_page.dart';
 import 'package:app/pages/sign_in/sign_in_page.dart';
 import 'package:app/state/app_state.dart';
 import 'package:app/widgets/gradient_border.dart';
+import 'package:app/widgets/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yar/yar.dart';
@@ -52,13 +53,7 @@ class SplashPage extends ConsumerWidget {
                 radius: AppTheme.radius,
                 width: 2.0,
               ),
-              child: Padding(
-                padding: AppSpacing.paddingAll8,
-                child: Text(
-                  'Shorten URL',
-                  style: context.theme.textTheme.bodyText1,
-                ),
-              ),
+              child: const AppLogo(),
             ),
           ),
         ),

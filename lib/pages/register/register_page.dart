@@ -5,6 +5,7 @@ import 'package:app/pages/register/register_page_state.dart';
 import 'package:app/state/app_state.dart';
 import 'package:app/widgets/controlled_textfield.dart';
 import 'package:app/widgets/loading_overlay.dart';
+import 'package:app/widgets/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yar/yar.dart';
@@ -73,45 +74,64 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           isLoading: state.isLoading,
           child: Padding(
             padding: AppSpacing.paddingAll8,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppSpacing.verticalMargin8,
-                ControlledTextFormField(
-                  decoration: const AppTextFieldDecoration(
-                    hintText: 'Email',
-                    prefixIcon: Icon(Icons.alternate_email),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AppSpacing.verticalMargin8,
+                      ControlledTextFormField(
+                        decoration: const AppTextFieldDecoration(
+                          hintText: 'Email',
+                          prefixIcon: Icon(Icons.alternate_email),
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        value: state.email,
+                        onChanged: stateNotifier.emailChanged,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (_) => state.emailError?.translatedError(),
+                      ),
+                      AppSpacing.verticalMargin8,
+                      ControlledTextFormField(
+                        decoration: const AppTextFieldDecoration(
+                          hintText: 'Password',
+                          prefixIcon: Icon(Icons.password),
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
+                        keyboardType: TextInputType.visiblePassword,
+                        obscureText: true,
+                        textInputAction: TextInputAction.done,
+                        value: state.password,
+                        onChanged: stateNotifier.passwordChanged,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (_) =>
+                            state.passwordError?.translatedError(),
+                      ),
+                      AppSpacing.verticalMargin8,
+                      ElevatedButton(
+                        key: const Key('button-sign-up'),
+                        child: const Text('Sign Up'),
+                        onPressed: stateNotifier.canSignUp
+                            ? stateNotifier.signUp
+                            : null,
+                      ),
+                    ],
                   ),
-                  textAlignVertical: TextAlignVertical.center,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  value: state.email,
-                  onChanged: stateNotifier.emailChanged,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (_) => state.emailError?.translatedError(),
                 ),
-                AppSpacing.verticalMargin8,
-                ControlledTextFormField(
-                  decoration: const AppTextFieldDecoration(
-                    hintText: 'Password',
-                    prefixIcon: Icon(Icons.password),
+                SliverFillRemaining(
+                  fillOverscroll: false,
+                  hasScrollBody: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Spacer(),
+                      AppLogo(),
+                    ],
                   ),
-                  textAlignVertical: TextAlignVertical.center,
-                  keyboardType: TextInputType.visiblePassword,
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
-                  value: state.password,
-                  onChanged: stateNotifier.passwordChanged,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (_) => state.passwordError?.translatedError(),
-                ),
-                AppSpacing.verticalMargin8,
-                ElevatedButton(
-                  key: const Key('button-sign-up'),
-                  child: const Text('Sign Up'),
-                  onPressed:
-                      stateNotifier.canSignUp ? stateNotifier.signUp : null,
-                ),
+                )
               ],
             ),
           ),

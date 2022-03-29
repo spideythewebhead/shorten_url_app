@@ -5,7 +5,6 @@ import 'package:app/models/user.dart';
 import 'package:app/repos/auth/models/auth_login_result.dart';
 import 'package:app/repos/auth/models/create_user_result.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
-import 'package:flutter/foundation.dart';
 
 class AuthRepo {
   AuthRepo(this._auth) {
@@ -92,9 +91,7 @@ class AuthRepo {
     try {
       await _auth.signOut();
       return true;
-    } on FirebaseAuthException catch (e) {
-      debugPrint('$e');
-    }
+    } catch (_) {}
 
     return false;
   }
