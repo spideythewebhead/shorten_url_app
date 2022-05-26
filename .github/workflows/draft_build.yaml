@@ -18,7 +18,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: "2.10.3"
+          flutter-version: "2.10.5"
       - run: flutter doctor -v
 
       - name: Checkout
@@ -33,7 +33,7 @@ jobs:
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "2.7"
+          ruby-version: "2.6"
           bundler-cache: true
           working-directory: android
 
