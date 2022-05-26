@@ -1,0 +1,30 @@
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Deploy a new version to the Google Play (BETA)"
+  lane :deploy_beta do
+    build_flutter()
+
+    upload_to_play_store(
+      track: 'beta',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      json_key: ENV['GOOGLE_PLAYSTORE_UPLOAD_KEY'],
+    )
+  end
+
+  desc "Promote Beta to Production"
+  lane :promote_beta_to_production do
+    upload_to_play_store(
+      track: 'beta',
+      track_promote_to: 'production',
+      skip_upload_changelogs: true,
+      json_key: ENV['GOOGLE_PLAYSTORE_UPLOAD_KEY'],
+    )
+  end
+end
+
+def build_flutter
+  sh("flutter build appbundle")
+end
