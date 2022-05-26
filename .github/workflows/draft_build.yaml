@@ -56,5 +56,5 @@ jobs:
 
       - run: bundle exec fastlane ${{ github.event.inputs.lane || 'deploy_beta' }}
         env:
-          GOOGLE_PLAYSTORE_UPLOAD_KEY: ${{ secrets.GOOGLE_PLAYSTORE_UPLOAD_JSON }}
+          GOOGLE_PLAYSTORE_UPLOAD_JSON: ${{ secrets.GOOGLE_PLAYSTORE_UPLOAD_JSON }}
         working-directory: android
