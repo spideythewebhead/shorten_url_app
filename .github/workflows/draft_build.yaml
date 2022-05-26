@@ -1,0 +1,60 @@
+name: Draft release
+on:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "Fastlane lane to use (deploy_beta OR promote_beta_to_production)"
+        required: true
+        default: "deploy_beta"
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  fastlane-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "2.10.5"
+      - run: flutter doctor -v
+
+      - name: Checkout
+        uses: actions/checkout@v2
+      - run: flutter pub get
+
+      - name: Generate files
+        run: flutter pub run build_runner build
+
+      # flutter build happens on fastlane
+
+      - name: Setup Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+          working-directory: android
+
+      # Creates a key.properties file from environment
+      - name: Configure Keystore
+        run: |
+          echo "$KEYSTORE_FILE" | base64 --decode > app/app.keystore
+          echo "file=app.keystore" >> key.properties
+          echo "alias=$KEYSTORE_KEY_ALIAS" >> key.properties
+          echo "keypass=$KEYSTORE_KEY_PASS" >> key.properties
+          echo "storepass=$KEYSTORE_STORE_PASS" >> key.properties
+          echo "$GOOGLE_SERVICES_JSON" >> app/google-services.json
+        env:
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASS }}
+          KEYSTORE_STORE_PASS: ${{ secrets.KEYSTORE_STORE_PASS }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        working-directory: android
+
+      - run: bundle exec fastlane ${{ github.event.inputs.lane || 'deploy_beta' }}
+        env:
+          GOOGLE_PLAYSTORE_UPLOAD_JSON: ${{ secrets.GOOGLE_PLAYSTORE_UPLOAD_JSON }}
+        working-directory: android
