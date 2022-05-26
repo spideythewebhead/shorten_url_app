@@ -1,11 +1,11 @@
 name: Draft release
 on:
   workflow_dispatch:
-  inputs:
-    lane:
-      description: "Fastlane lane to use (deploy_beta OR promote_beta_to_production)"
-      required: true
-      default: "deploy_beta"
+    inputs:
+      lane:
+        description: "Fastlane lane to use (deploy_beta OR promote_beta_to_production)"
+        required: true
+        default: "deploy_beta"
   push:
     branches:
       - main
