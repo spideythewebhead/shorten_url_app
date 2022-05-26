@@ -7,8 +7,6 @@ on:
         required: true
         default: "deploy_beta"
   push:
-    branches:
-      - main
     tags:
       - "v*"
 
