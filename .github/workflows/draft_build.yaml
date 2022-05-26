@@ -41,10 +41,10 @@ jobs:
       - name: Configure Keystore
         run: |
           echo "$KEYSTORE_FILE" | base64 --decode > app/app.keystore
-          echo "storeFile=app.keystore" >> key.properties
-          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
-          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
-          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
+          echo "file=app.keystore" >> key.properties
+          echo "alias=$KEYSTORE_KEY_ALIAS" >> key.properties
+          echo "keypass=$KEYSTORE_KEY_PASS" >> key.properties
+          echo "storepass=$KEYSTORE_STORE_PASS" >> key.properties
           echo "$GOOGLE_SERVICES_JSON" >> app/google-services.json
         env:
           KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
@@ -56,5 +56,5 @@ jobs:
 
       - run: bundle exec fastlane ${{ github.event.inputs.lane || 'deploy_beta' }}
         env:
-          GOOGLE_PLAYSTORE_UPLOAD_KEY: ${{ secrets.GOOGLE_PLAYSTORE_UPLOAD_KEY }}
+          GOOGLE_PLAYSTORE_UPLOAD_KEY: ${{ secrets.GOOGLE_PLAYSTORE_UPLOAD_JSON }}
         working-directory: android
